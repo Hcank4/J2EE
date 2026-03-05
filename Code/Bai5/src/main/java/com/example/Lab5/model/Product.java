@@ -1,0 +1,31 @@
+package com.example.Lab5.model; //
+
+import jakarta.persistence.*;
+import jakarta.validation.constraints.*;
+import lombok.Data;
+import org.hibernate.validator.constraints.Length;
+
+@Data
+@Entity
+public class Product {
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
+
+    @NotBlank(message = "Tên sản phẩm không được để trống")
+    @Column(nullable = false, length = 255)
+    private String name;
+
+    @NotNull(message = "Giá sản phẩm không được để trống")
+    @Min(value = 1, message = "Giá sản phẩm không được nhỏ hơn 1")
+    @Column(nullable = false)
+    private Long price;
+
+    @Length(min = 0, max = 200, message = "Tên hình ảnh không quá 200 ký tự")
+    @Column(length = 200)
+    private String image;
+
+    @ManyToOne
+    @JoinColumn(name = "Category_Id", nullable = false) // Khớp hoa thường với DB
+    private Category category;
+}
