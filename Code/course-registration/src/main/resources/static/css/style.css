@@ -1,0 +1,16 @@
+body {
+    background-color: #f8f9fa;
+}
+
+.course-img {
+    height: 220px;
+    object-fit: cover;
+}
+
+.card {
+    border-radius: 12px;
+}
+
+.navbar-brand {
+    letter-spacing: 0.5px;
+}
