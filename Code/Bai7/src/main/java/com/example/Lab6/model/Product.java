@@ -1,0 +1,43 @@
+package com.example.Lab6.model;
+
+import jakarta.persistence.*;
+import jakarta.validation.constraints.Max;
+import jakarta.validation.constraints.Min;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
+import lombok.Data;
+import org.hibernate.validator.constraints.Length;
+
+@Data
+@Entity
+@Table(name = "product")
+public class Product {
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
+
+    @NotBlank(message = "Tên sản phẩm không được để trống")
+    @Column(nullable = false, length = 255)
+    private String name;
+
+    @NotNull(message = "Giá sản phẩm không được để trống")
+    @Min(value = 1, message = "Giá sản phẩm không được nhỏ hơn 1")
+    @Max(value = 9999999, message = "Giá sản phẩm không được lớn hơn 9999999")
+    @Column(nullable = false)
+    private Long price;
+
+    @Length(min = 0, max = 200, message = "Tên hình ảnh không quá 200 ký tự")
+    @Column(length = 200)
+    private String image;
+
+    @Min(value = 0, message = "Số lượng không được âm")
+    @Column(nullable = false)
+    private Integer quantity = 0;
+
+    @Column(columnDefinition = "TEXT")
+    private String description;
+
+    @ManyToOne
+    @JoinColumn(name = "category_id", nullable = false)
+    private Category category;
+}
