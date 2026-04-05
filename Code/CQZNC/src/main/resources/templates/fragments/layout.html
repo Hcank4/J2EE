@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="vi" xmlns:th="http://www.thymeleaf.org">
+<body>
+<header th:fragment="header" class="topbar">
+  <div class="container nav-wrap">
+    <a class="brand" th:href="@{/}"><span>Job Portal</span></a>
+    <nav class="nav-links">
+      <a th:href="@{/jobs}">Việc làm</a>
+      <th:block th:if="${currentUser == null}">
+        <a th:href="@{/login}">Đăng nhập</a>
+        <a th:href="@{/register}">Đăng ký</a>
+      </th:block>
+      <th:block th:if="${currentUser != null}">
+        <a th:if="${currentUser.role.name() == 'admin'}" th:href="@{/admin}">Dashboard</a>
+        <a th:if="${currentUser.role.name() == 'employer'}" th:href="@{/employer}">Dashboard</a>
+        <a th:if="${currentUser.role.name() == 'user'}" th:href="@{/user}">Dashboard</a>
+        <span class="nav-avatar" th:if="${currentUser.image != null and !#strings.isEmpty(currentUser.image)}">
+          <img th:src="@{'/uploads/avatars/' + ${currentUser.image}}" alt="Avatar">
+        </span>
+        <span class="nav-avatar nav-avatar-fallback"
+              th:if="${currentUser.image == null or #strings.isEmpty(currentUser.image)}"
+              th:text="${currentUser.fullname != null and !#strings.isEmpty(currentUser.fullname) ? #strings.substring(currentUser.fullname,0,1) : 'U'}">U</span>
+        <span class="user-name" th:text="${currentUser.fullname}">Người dùng</span>
+        <a th:href="@{/logout}">Đăng xuất</a>
+      </th:block>
+    </nav>
+  </div>
+</header>
+
+<div class="toast-stack" th:if="${success != null or error != null}">
+  <div class="toast toast-success" th:if="${success}" th:text="${success}">Thao tác thành công</div>
+  <div class="toast toast-error" th:if="${error}" th:text="${error}">Đã có lỗi xảy ra</div>
+</div>
+
+<script>
+  document.addEventListener('DOMContentLoaded', function () {
+    const stack = document.querySelector('.toast-stack');
+    if (!stack) return;
+    const toasts = stack.querySelectorAll('.toast');
+    setTimeout(function () {
+      toasts.forEach(function (toast) {
+        toast.classList.add('hide');
+      });
+      setTimeout(function () {
+        stack.remove();
+      }, 280);
+    }, 3200);
+  });
+</script>
+
+<footer th:fragment="footer" class="footer">
+  <div class="container">© 2026 Job Portal - Website tìm kiếm việc làm</div>
+</footer>
+</body>
+</html>

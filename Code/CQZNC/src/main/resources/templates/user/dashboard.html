@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="vi" xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Dashboard Ứng viên - Job Portal</title>
+  <link rel="stylesheet" th:href="@{/css/style.css}">
+</head>
+<body>
+<div th:replace="fragments/layout :: header"></div>
+<section class="dashboard-wrap">
+  <div class="container dashboard-grid">
+    <div class="section-head">
+      <div>
+        <h1 class="section-title">Bảng điều khiển ứng viên</h1>
+        <p class="section-sub">Theo dõi việc làm đã lưu và hồ sơ ứng tuyển của bạn.</p>
+      </div>
+      <a class="btn btn-outline" th:href="@{/user/profile}">Cập nhật hồ sơ</a>
+    </div>
+
+    <div class="dashboard-card">
+      <h2>Việc làm đã lưu</h2>
+      <div class="grid-3" th:if="${savedJobs != null and !#lists.isEmpty(savedJobs)}">
+        <div class="job-card" th:each="item : ${savedJobs}">
+          <div class="job-title" th:text="${item.job.title}"></div>
+          <div class="job-company" th:text="${item.job.companyName}"></div>
+          <div class="meta"><span th:text="${item.job.province}"></span></div>
+          <div class="job-actions"><a th:href="@{/jobs/{id}(id=${item.job.id})}">Xem tin</a></div>
+        </div>
+      </div>
+      <div class="empty-box" th:if="${savedJobs == null or #lists.isEmpty(savedJobs)}">Bạn chưa lưu việc làm nào.</div>
+    </div>
+
+    <div class="dashboard-card">
+      <h2>Đơn ứng tuyển</h2>
+      <table class="simple-table">
+        <tr><th>Công việc</th><th>Công ty</th><th>CV</th><th>Trạng thái</th></tr>
+        <tr th:each="a : ${applications}">
+          <td th:text="${a.job.title}"></td>
+          <td>
+            <div class="cell-user">
+              <img class="mini-avatar"
+                   th:if="${a.employer.image != null and !#strings.isEmpty(a.employer.image)}"
+                   th:src="@{'/uploads/avatars/' + ${a.employer.image}}"
+                   alt="Avatar công ty">
+              <span class="mini-avatar mini-avatar-fallback"
+                    th:if="${a.employer.image == null or #strings.isEmpty(a.employer.image)}"
+                    th:text="${a.employer.companyName != null and !#strings.isEmpty(a.employer.companyName) ? #strings.substring(a.employer.companyName,0,1) : 'N'}">N</span>
+              <span th:text="${a.employer.companyName}"></span>
+            </div>
+          </td>
+          <td>
+            <a href="#"
+               class="cv-link"
+               th:attr="data-cv-url=@{'/uploads/cv/' + ${a.cvPath}}">Mở CV</a>
+          </td>
+          <td th:text="${a.status == 1 ? 'Đã duyệt' : (a.status == 2 ? 'Từ chối' : 'Chờ duyệt')}"></td>
+        </tr>
+      </table>
+    </div>
+  </div>
+</section>
+<script>
+  document.addEventListener('DOMContentLoaded', function () {
+    function showToast(message, type) {
+      const stack = document.querySelector('.toast-stack') || Object.assign(document.body.appendChild(document.createElement('div')), { className: 'toast-stack' });
+      const toast = document.createElement('div');
+      toast.className = 'toast ' + (type === 'success' ? 'toast-success' : 'toast-error');
+      toast.textContent = message;
+      stack.appendChild(toast);
+      setTimeout(function () {
+        toast.classList.add('hide');
+        setTimeout(function () { toast.remove(); }, 280);
+      }, 3200);
+    }
+
+    document.querySelectorAll('.cv-link').forEach(function (link) {
+      link.addEventListener('click', async function (e) {
+        e.preventDefault();
+        const cvUrl = link.getAttribute('data-cv-url');
+        if (!cvUrl) {
+          showToast('Không thể tìm thấy file CV', 'error');
+          return;
+        }
+        try {
+          const res = await fetch(cvUrl, { method: 'HEAD' });
+          if (res.ok) {
+            window.location.href = cvUrl;
+          } else {
+            showToast('Không thể tìm thấy file CV', 'error');
+          }
+        } catch (err) {
+          showToast('Không thể tìm thấy file CV', 'error');
+        }
+      });
+    });
+  });
+</script>
+<div th:replace="fragments/layout :: footer"></div>
+</body>
+</html>

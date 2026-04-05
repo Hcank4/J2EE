@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="vi" xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Hồ sơ nhà tuyển dụng</title>
+  <link rel="stylesheet" th:href="@{/css/style.css}">
+</head>
+<body>
+<div th:replace="fragments/layout :: header"></div>
+<section class="auth-wrap">
+  <div class="auth-card profile-card">
+    <h1>Hồ sơ nhà tuyển dụng</h1>
+    <p class="section-sub">Thông tin này sẽ hiển thị cùng các tin tuyển dụng của công ty.</p>
+
+    <form method="post" enctype="multipart/form-data" class="form-grid">
+      <div class="avatar-editor">
+        <img class="avatar-preview"
+             th:if="${user.image != null and !#strings.isEmpty(user.image)}"
+             th:src="@{'/uploads/avatars/' + ${user.image}}"
+             alt="Ảnh đại diện">
+        <div class="avatar-fallback"
+             th:if="${user.image == null or #strings.isEmpty(user.image)}"
+             th:text="${user.fullname != null and !#strings.isEmpty(user.fullname) ? #strings.substring(user.fullname,0,1) : 'N'}">N</div>
+        <div class="form-group" style="margin:0">
+          <label for="avatarFile">Logo/Ảnh đại diện</label>
+          <input id="avatarFile" type="file" name="avatarFile" accept="image/*">
+        </div>
+      </div>
+
+      <div class="profile-grid">
+        <div class="dashboard-card profile-panel">
+          <h3>Thông tin doanh nghiệp</h3>
+          <div class="form-group"><label>Người đại diện</label><input name="fullname" th:value="${user.fullname}" placeholder="Người đại diện"></div>
+          <div class="form-group"><label>Tên công ty</label><input name="companyName" th:value="${user.companyName}" placeholder="Tên công ty"></div>
+          <div class="form-group"><label>Email</label><input th:value="${user.email}" disabled></div>
+          <div class="form-group"><label>Điện thoại</label><input name="mobile" th:value="${user.mobile}" placeholder="Điện thoại"></div>
+          <div class="form-group"><label>Website</label><input name="companyWebsite" th:value="${user.companyWebsite}" placeholder="https://..."></div>
+        </div>
+
+        <div class="dashboard-card profile-panel">
+          <h3>Địa chỉ công ty</h3>
+          <div class="form-group"><label>Tỉnh/Thành</label><input name="province" th:value="${user.province}" placeholder="Tỉnh/Thành"></div>
+          <div class="form-group"><label>Quận/Huyện</label><input name="district" th:value="${user.district}" placeholder="Quận/Huyện"></div>
+          <div class="form-group"><label>Phường/Xã</label><input name="wards" th:value="${user.wards}" placeholder="Phường/Xã"></div>
+          <div class="form-group"><label>Địa chỉ chi tiết</label><input name="locationDetail" th:value="${user.locationDetail}" placeholder="Số nhà, đường..."></div>
+        </div>
+      </div>
+
+      <div style="display:flex;gap:10px;flex-wrap:wrap">
+        <button class="btn btn-primary" type="submit">Lưu hồ sơ</button>
+        <a class="btn btn-outline" th:href="@{/employer}">Quay lại dashboard</a>
+      </div>
+    </form>
+  </div>
+</section>
+<div th:replace="fragments/layout :: footer"></div>
+</body>
+</html>

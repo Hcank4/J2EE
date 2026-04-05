@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="vi" xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Dashboard Admin - Job Portal</title>
+  <link rel="stylesheet" th:href="@{/css/style.css}">
+</head>
+<body>
+<div th:replace="fragments/layout :: header"></div>
+<section class="dashboard-wrap">
+  <div class="container dashboard-grid">
+    <div class="section-head">
+      <div>
+        <h1 class="section-title">Quản trị hệ thống</h1>
+        <p class="section-sub">Theo dõi thống kê và kiểm duyệt nội dung website.</p>
+      </div>
+    </div>
+
+    <div style="padding:12px 14px;border-radius:12px;background:#ecfdf5;color:#166534;border:1px solid #bbf7d0" th:if="${success}" th:text="${success}"></div>
+
+    <div class="grid-4">
+      <div class="dashboard-card"><h2 th:text="${stats.users}">0</h2><p>Ứng viên</p></div>
+      <div class="dashboard-card"><h2 th:text="${stats.employers}">0</h2><p>Nhà tuyển dụng</p></div>
+      <div class="dashboard-card"><h2 th:text="${stats.jobs}">0</h2><p>Tin tuyển dụng</p></div>
+      <div class="dashboard-card"><h2 th:text="${stats.applications}">0</h2><p>Hồ sơ ứng tuyển</p></div>
+    </div>
+
+    <div class="dashboard-card">
+      <h2>Quản lý tài khoản ứng viên</h2>
+      <table class="simple-table">
+        <tr><th>Tên</th><th>Email</th><th>Trạng thái</th><th></th></tr>
+        <tr th:each="u : ${users}">
+          <td th:text="${u.fullname}"></td>
+          <td th:text="${u.email}"></td>
+          <td th:text="${u.status == 1 ? 'Hoạt động' : 'Khóa'}"></td>
+          <td>
+            <form th:action="@{/admin/users/{id}/toggle(id=${u.id})}" method="post">
+              <button class="btn btn-outline" type="submit">Đổi trạng thái</button>
+            </form>
+          </td>
+        </tr>
+      </table>
+    </div>
+
+    <div class="dashboard-card">
+      <h2>Quản lý tài khoản nhà tuyển dụng</h2>
+      <table class="simple-table">
+        <tr><th>Tên công ty</th><th>Email</th><th>Trạng thái</th><th></th></tr>
+        <tr th:each="u : ${employers}">
+          <td th:text="${u.companyName != null ? u.companyName : u.fullname}"></td>
+          <td th:text="${u.email}"></td>
+          <td th:text="${u.status == 1 ? 'Hoạt động' : 'Khóa'}"></td>
+          <td>
+            <form th:action="@{/admin/users/{id}/toggle(id=${u.id})}" method="post">
+              <button class="btn btn-outline" type="submit">Đổi trạng thái</button>
+            </form>
+          </td>
+        </tr>
+      </table>
+    </div>
+
+    <div class="dashboard-card">
+      <h2>Kiểm duyệt tin tuyển dụng</h2>
+      <table class="simple-table">
+        <tr><th>Tiêu đề</th><th>Công ty</th><th>Trạng thái</th><th>Thao tác</th></tr>
+        <tr th:each="job : ${jobs}">
+          <td th:text="${job.title}"></td>
+          <td th:text="${job.companyName}"></td>
+          <td th:text="${job.status == 1 ? 'Đã duyệt' : 'Chờ duyệt'}"></td>
+          <td style="display:flex;gap:8px;flex-wrap:wrap">
+            <form th:action="@{/admin/jobs/{id}/approve(id=${job.id})}" method="post">
+              <button class="btn btn-primary" type="submit">Duyệt</button>
+            </form>
+            <form th:action="@{/admin/jobs/{id}/reject(id=${job.id})}" method="post">
+              <button class="btn btn-outline" type="submit">Chờ duyệt</button>
+            </form>
+          </td>
+        </tr>
+      </table>
+    </div>
+  </div>
+</section>
+<div th:replace="fragments/layout :: footer"></div>
+</body>
+</html>

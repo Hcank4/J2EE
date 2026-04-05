@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="vi" xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Trang chủ - Job Portal</title>
+  <link rel="stylesheet" th:href="@{/css/style.css}">
+</head>
+<body>
+<div th:replace="fragments/layout :: header"></div>
+<section class="hero">
+  <div class="container hero-grid">
+    <div class="hero-card">
+      <div class="badge">Nền tảng tuyển dụng cho đồ án</div>
+      <h1 class="hero-title">Tìm việc nhanh, ứng tuyển dễ, quản lý tuyển dụng gọn gàng</h1>
+      <p class="hero-desc">Giao diện được làm lại để gọn, dễ nhìn và phù hợp với website tìm kiếm việc làm. Người dùng có thể tìm việc theo từ khóa, tỉnh thành và xem danh sách việc làm nổi bật ngay tại trang chủ.</p>
+      <form class="search-box" th:action="@{/jobs}" method="get">
+        <input type="text" name="keyword" placeholder="Từ khóa công việc, công ty...">
+        <input type="text" name="province" placeholder="Tỉnh / thành phố">
+        <button type="submit" class="btn btn-primary">Tìm việc ngay</button>
+      </form>
+      <div class="stats">
+        <div class="stat"><strong th:text="${featuredJobs != null ? featuredJobs.size() : 0}">0</strong><span>Việc nổi bật</span></div>
+        <div class="stat"><strong th:text="${careers != null ? careers.size() : 0}">0</strong><span>Ngành nghề</span></div>
+        <div class="stat"><strong>24/7</strong><span>Hỗ trợ trải nghiệm</span></div>
+      </div>
+    </div>
+    <div class="hero-side">
+      <h2>Nổi bật trong hệ thống</h2>
+      <p>Trang chủ được làm theo phong cách website tuyển dụng hiện đại với khu vực giới thiệu, tìm kiếm nhanh, danh sách việc làm nổi bật và danh mục nghề nghiệp rõ ràng.</p>
+      <div class="feature-line"><strong>Tìm kiếm nhanh</strong><span>Theo từ khóa và tỉnh thành</span></div>
+      <div class="feature-line"><strong>Việc làm nổi bật</strong></div>
+      <div class="feature-line"><strong>Danh mục nổi bật</strong><span>Điều hướng nhanh theo ngành nghề</span></div>
+    </div>
+  </div>
+</section>
+<section class="section">
+  <div class="container">
+    <div class="section-head">
+      <div>
+        <h2 class="section-title">Việc làm nổi bật</h2>
+        <p class="section-sub">Hiển thị tối đa 10 công việc tại trang chủ. Muốn xem đầy đủ, hãy bấm vào nút xem tất cả.</p>
+      </div>
+      <a class="btn btn-outline" th:href="@{/jobs}">Xem tất cả việc làm</a>
+    </div>
+    <div class="grid-4" th:if="${featuredJobs != null and !#lists.isEmpty(featuredJobs)}">
+      <div class="job-card" th:each="job, iter : ${featuredJobs}" th:if="${iter.index < 10}">
+        <div class="job-title" th:text="${job.title}">Tên công việc</div>
+        <div class="job-company" th:text="${job.companyName}">Tên công ty</div>
+        <div class="meta">
+          <span th:text="${job.province != null ? job.province : 'Đang cập nhật'}">Địa điểm</span>
+        </div>
+        <div class="salary" th:text="${job.salary != null ? job.salary : 'Thỏa thuận'}">Mức lương</div>
+        <div class="job-actions"><a th:href="@{/jobs/{id}(id=${job.id})}">Xem chi tiết</a></div>
+      </div>
+    </div>
+    <div class="empty-box" th:if="${featuredJobs == null or #lists.isEmpty(featuredJobs)}">Chưa có việc làm nổi bật.</div>
+  </div>
+</section>
+<section class="section">
+  <div class="container">
+    <div class="section-head">
+      <div>
+        <h2 class="section-title">Danh mục nổi bật</h2>
+        <p class="section-sub">Một số nhóm ngành tiêu biểu để điều hướng nhanh hơn.</p>
+      </div>
+    </div>
+    <div class="category-list" th:if="${careers != null and !#lists.isEmpty(careers)}">
+      <div class="category-card" th:each="career, iter : ${careers}" th:if="${iter.index < 8}">
+        <h3 th:text="${career.name}">Tên ngành</h3>
+        <p>Khám phá cơ hội việc làm phù hợp</p>
+      </div>
+    </div>
+  </div>
+</section>
+<div th:replace="fragments/layout :: footer"></div>
+</body>
+</html>

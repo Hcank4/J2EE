@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="vi" xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title th:text="${job.title} + ' - Job Portal'">Chi tiet viec lam</title>
+  <link rel="stylesheet" th:href="@{/css/style.css}">
+</head>
+<body>
+<div th:replace="fragments/layout :: header"></div>
+<section class="page-wrap">
+  <div class="container">
+    <div class="detail-card" th:if="${job != null}">
+      <div class="breadcrumb">Trang chu / Viec lam / Chi tiet</div>
+      <span class="status-pill">Dang tuyen</span>
+      <div class="detail-header">
+        <h1 th:text="${job.title}">Ten cong viec</h1>
+        <div class="meta">
+          <span th:text="${job.companyName}">Cong ty</span>
+          <span th:text="${job.province != null ? job.province : 'Dang cap nhat'}">Dia diem</span>
+          <span th:text="${job.salary != null ? job.salary : 'Thoa thuan'}">Luong</span>
+        </div>
+      </div>
+
+      <div class="error-box" th:if="${error}" th:text="${error}">Loi</div>
+      <div style="padding:12px 14px;border-radius:12px;background:#ecfdf5;color:#166534;border:1px solid #bbf7d0;margin-bottom:14px"
+           th:if="${success}" th:text="${success}">Thanh cong</div>
+
+      <div class="detail-layout">
+        <div class="detail-main">
+          <div class="detail-section">
+            <h2>Mo ta cong viec</h2>
+            <div class="rich-text" th:utext="${job.description != null ? job.description : 'Dang cap nhat mo ta cong viec'}"></div>
+          </div>
+          <div class="detail-section">
+            <h2>Quyen loi</h2>
+            <div class="rich-text" th:utext="${job.benefits != null ? job.benefits : 'Dang cap nhat quyen loi'}"></div>
+          </div>
+          <div class="detail-section">
+            <h2>Yeu cau</h2>
+            <div class="rich-text" th:utext="${job.qualifications != null ? job.qualifications : 'Dang cap nhat yeu cau'}"></div>
+          </div>
+        </div>
+
+        <aside class="detail-sidebar">
+          <div class="detail-section detail-side-card">
+            <h2>Thong tin nhanh</h2>
+            <div class="info-box">
+              <div class="info-item"><strong>Cong ty</strong><span th:text="${job.companyName}"></span></div>
+              <div class="info-item"><strong>Dia diem</strong><span th:text="${job.province != null ? job.province : 'Dang cap nhat'}"></span></div>
+              <div class="info-item"><strong>Kinh nghiem</strong><span th:text="${job.experience != null ? job.experience : 'Dang cap nhat'}"></span></div>
+              <div class="info-item"><strong>Han nop</strong><span th:text="${job.expirationDate != null ? job.expirationDate : 'Dang cap nhat'}"></span></div>
+            </div>
+          </div>
+
+          <div class="action-stack detail-side-card">
+            <th:block th:if="${currentUser != null and currentUser.role.name() == 'user'}">
+              <form th:action="@{/jobs/{id}/apply(id=${job.id})}" method="post" class="form-grid">
+                <div class="form-group">
+                  <label for="selectedCv"><strong>Chon CV de nop</strong></label>
+                  <select id="selectedCv" name="selectedCv" required>
+                    <option value="">-- Chon 1 CV --</option>
+                    <option th:each="cv : ${userCvItems}" th:value="${cv.storedName}" th:text="${cv.displayName}">CV</option>
+                  </select>
+                </div>
+                <button type="submit" class="btn btn-primary" th:disabled="${#lists.isEmpty(userCvItems)}">Ung tuyen ngay</button>
+              </form>
+              <div class="empty-box" th:if="${#lists.isEmpty(userCvItems)}">
+                Ban chua co CV. Vui long tai len toi da 3 CV tai
+                <a th:href="@{/user/profile}">trang ho so</a>.
+              </div>
+            </th:block>
+            <a th:if="${currentUser == null}" class="btn btn-primary" th:href="@{/login}">Dang nhap de ung tuyen</a>
+            <form th:if="${currentUser != null and currentUser.role.name() == 'user'}" th:action="@{/jobs/{id}/save(id=${job.id})}" method="post">
+              <button type="submit" class="btn btn-outline" th:text="${isSaved ? 'Bo luu viec lam' : 'Luu viec lam'}">Luu viec lam</button>
+            </form>
+            <a class="btn btn-outline" th:href="@{/jobs}">Quay lai danh sach</a>
+          </div>
+        </aside>
+      </div>
+    </div>
+  </div>
+</section>
+<div th:replace="fragments/layout :: footer"></div>
+</body>
+</html>

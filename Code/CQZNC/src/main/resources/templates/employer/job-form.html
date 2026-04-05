@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="vi" xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title th:text="${jobId != null ? 'Cập nhật tin tuyển dụng' : 'Đăng tin tuyển dụng'}">Form việc làm</title>
+  <link rel="stylesheet" th:href="@{/css/style.css}">
+</head>
+<body>
+<div th:replace="fragments/layout :: header"></div>
+<section class="auth-wrap">
+  <div class="auth-card editor-card">
+    <h1 th:text="${jobId != null ? 'Cập nhật tin tuyển dụng' : 'Đăng tin tuyển dụng'}"></h1>
+    <p class="section-sub">Điền đầy đủ thông tin để tăng tỷ lệ tiếp cận ứng viên phù hợp.</p>
+
+    <form method="post" th:object="${jobForm}" class="form-grid">
+      <div class="error-box" th:if="${#fields.hasAnyErrors()}">Vui lòng kiểm tra lại các trường bắt buộc.</div>
+      <div class="grid-3">
+        <div class="form-group"><label>Tiêu đề</label><input th:field="*{title}" placeholder="Ví dụ: Java Developer"></div>
+        <div class="form-group"><label>Ngành nghề</label><select th:field="*{careerId}"><option value="">Chọn ngành nghề</option><option th:each="c : ${careers}" th:value="${c.id}" th:text="${c.name}"></option></select></div>
+        <div class="form-group"><label>Loại hình</label><select th:field="*{jobTypeId}"><option value="">Chọn loại hình</option><option th:each="t : ${jobTypes}" th:value="${t.id}" th:text="${t.name}"></option></select></div>
+        <div class="form-group"><label>Số lượng</label><input th:field="*{vacancy}" type="number" min="1" placeholder="Số lượng cần tuyển"></div>
+        <div class="form-group"><label>Mức lương</label><input th:field="*{salary}" placeholder="Ví dụ: 15-20 triệu"></div>
+        <div class="form-group"><label>Kinh nghiệm</label><input th:field="*{experience}" placeholder="Ví dụ: 2 năm"></div>
+        <div class="form-group"><label>Cấp bậc</label><input th:field="*{jobLevel}" placeholder="Ví dụ: Senior"></div>
+        <div class="form-group"><label>Tên công ty</label><input th:field="*{companyName}" placeholder="Tên công ty"></div>
+        <div class="form-group"><label>Website công ty</label><input th:field="*{companyWebsite}" placeholder="https://..."></div>
+        <div class="form-group"><label>Tỉnh/Thành</label><input th:field="*{province}" placeholder="Tỉnh/Thành"></div>
+        <div class="form-group"><label>Quận/Huyện</label><input th:field="*{district}" placeholder="Quận/Huyện"></div>
+        <div class="form-group"><label>Phường/Xã</label><input th:field="*{wards}" placeholder="Phường/Xã"></div>
+        <div class="form-group"><label>Địa chỉ chi tiết</label><input th:field="*{locationDetail}" placeholder="Số nhà, đường..."></div>
+        <div class="form-group"><label>Hạn nộp</label><input th:field="*{expirationDate}" type="date"></div>
+      </div>
+
+      <div class="form-group"><label>Mô tả</label><textarea th:field="*{description}" placeholder="Mô tả công việc chi tiết"></textarea></div>
+      <div class="form-group"><label>Yêu cầu</label><textarea th:field="*{qualifications}" placeholder="Yêu cầu ứng viên"></textarea></div>
+      <div class="form-group"><label>Quyền lợi</label><textarea th:field="*{benefits}" placeholder="Quyền lợi khi làm việc"></textarea></div>
+      <div class="form-group"><label>Trách nhiệm</label><textarea th:field="*{responsibility}" placeholder="Nhiệm vụ chính"></textarea></div>
+      <div class="form-group"><label>Từ khóa</label><textarea th:field="*{keywords}" placeholder="Java, Spring Boot, MySQL..."></textarea></div>
+
+      <div class="form-group">
+        <input type="hidden" name="isFeatured" value="0">
+        <label><input type="checkbox" name="isFeatured" value="1" th:checked="${jobForm.isFeatured != null and jobForm.isFeatured == 1}"> Tin nổi bật</label>
+      </div>
+
+      <button class="btn btn-primary" type="submit" th:text="${jobId != null ? 'Lưu cập nhật' : 'Đăng tin'}">Lưu tin</button>
+    </form>
+  </div>
+</section>
+<div th:replace="fragments/layout :: footer"></div>
+</body>
+</html>

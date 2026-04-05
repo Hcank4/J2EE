@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="vi" xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Dashboard Nhà tuyển dụng - Job Portal</title>
+  <link rel="stylesheet" th:href="@{/css/style.css}">
+</head>
+<body>
+<div th:replace="fragments/layout :: header"></div>
+<section class="dashboard-wrap">
+  <div class="container dashboard-grid">
+    <div class="section-head">
+      <div>
+        <h1 class="section-title">Bảng điều khiển nhà tuyển dụng</h1>
+        <p class="section-sub">Quản lý tin tuyển dụng và hồ sơ ứng tuyển.</p>
+      </div>
+      <div style="display:flex;gap:10px;flex-wrap:wrap">
+        <a class="btn btn-primary" th:href="@{/employer/jobs/new}">Đăng tin mới</a>
+        <a class="btn btn-outline" th:href="@{/employer/profile}">Hồ sơ công ty</a>
+      </div>
+    </div>
+
+    <div class="dashboard-card">
+      <h2>Tin tuyển dụng</h2>
+      <table class="simple-table">
+        <tr><th>Tiêu đề</th><th>Trạng thái</th><th>Địa điểm</th><th>Thao tác</th></tr>
+        <tr th:each="job : ${jobs}">
+          <td th:text="${job.title}"></td>
+          <td th:text="${job.status == 1 ? 'Đã duyệt' : 'Chờ duyệt'}"></td>
+          <td th:text="${job.province}"></td>
+          <td style="display:flex;gap:8px;flex-wrap:wrap">
+            <a class="btn btn-outline" th:href="@{/employer/jobs/{id}/edit(id=${job.id})}">Sửa</a>
+            <a class="btn btn-outline" th:href="@{/jobs/{id}(id=${job.id})}">Xem</a>
+          </td>
+        </tr>
+      </table>
+    </div>
+
+    <div class="dashboard-card">
+      <h2>Hồ sơ ứng tuyển</h2>
+      <table class="simple-table">
+        <tr><th>Ứng viên</th><th>Công việc</th><th>CV</th><th>Trạng thái</th><th>Cập nhật</th></tr>
+        <tr th:each="a : ${applications}">
+          <td>
+            <div class="cell-user">
+              <img class="mini-avatar"
+                   th:if="${a.user.image != null and !#strings.isEmpty(a.user.image)}"
+                   th:src="@{'/uploads/avatars/' + ${a.user.image}}"
+                   alt="Avatar ứng viên">
+              <span class="mini-avatar mini-avatar-fallback"
+                    th:if="${a.user.image == null or #strings.isEmpty(a.user.image)}"
+                    th:text="${a.user.fullname != null and !#strings.isEmpty(a.user.fullname) ? #strings.substring(a.user.fullname,0,1) : 'U'}">U</span>
+              <span th:text="${a.user.fullname}"></span>
+            </div>
+          </td>
+          <td th:text="${a.job.title}"></td>
+          <td>
+            <a href="#"
+               class="cv-link"
+               th:attr="data-cv-url=@{'/uploads/cv/' + ${a.cvPath}}">Mở CV</a>
+          </td>
+          <td th:text="${a.status == 1 ? 'Đã duyệt' : (a.status == 2 ? 'Từ chối' : 'Chờ duyệt')}"></td>
+          <td>
+            <form th:action="@{/employer/applications/{id}/status(id=${a.id})}" method="post" style="display:flex;gap:8px;align-items:center;flex-wrap:wrap">
+              <select name="status">
+                <option value="0" th:selected="${a.status == 0}">Chờ duyệt</option>
+                <option value="1" th:selected="${a.status == 1}">Đã duyệt</option>
+                <option value="2" th:selected="${a.status == 2}">Từ chối</option>
+              </select>
+              <button class="btn btn-primary" type="submit">Lưu</button>
+            </form>
+          </td>
+        </tr>
+      </table>
+    </div>
+  </div>
+</section>
+<script>
+  document.addEventListener('DOMContentLoaded', function () {
+    function showToast(message, type) {
+      const stack = document.querySelector('.toast-stack') || Object.assign(document.body.appendChild(document.createElement('div')), { className: 'toast-stack' });
+      const toast = document.createElement('div');
+      toast.className = 'toast ' + (type === 'success' ? 'toast-success' : 'toast-error');
+      toast.textContent = message;
+      stack.appendChild(toast);
+      setTimeout(function () {
+        toast.classList.add('hide');
+        setTimeout(function () { toast.remove(); }, 280);
+      }, 3200);
+    }
+
+    document.querySelectorAll('.cv-link').forEach(function (link) {
+      link.addEventListener('click', async function (e) {
+        e.preventDefault();
+        const cvUrl = link.getAttribute('data-cv-url');
+        if (!cvUrl) {
+          showToast('Không thể tìm thấy file CV', 'error');
+          return;
+        }
+        try {
+          const res = await fetch(cvUrl, { method: 'HEAD' });
+          if (res.ok) {
+            window.location.href = cvUrl;
+          } else {
+            showToast('Không thể tìm thấy file CV', 'error');
+          }
+        } catch (err) {
+          showToast('Không thể tìm thấy file CV', 'error');
+        }
+      });
+    });
+  });
+</script>
+<div th:replace="fragments/layout :: footer"></div>
+</body>
+</html>
